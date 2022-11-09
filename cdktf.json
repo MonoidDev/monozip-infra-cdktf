@@ -1,0 +1,47 @@
+{
+  "language": "typescript",
+  "app": "npx ts-node main.ts",
+  "projectId": "487d9543-b786-4ecf-a9d2-d269addb5a0f",
+  "sendCrashReports": "false",
+  "terraformProviders": [
+    {
+      "name": "aws",
+      "source": "hashicorp/aws",
+      "version": "4.36.1"
+    },    {
+      "name": "random",
+      "source": "hashicorp/random",
+      "version": "3.4.3"
+    }],
+  "terraformModules": [
+    {
+      "name": "vpc",
+      "source": "terraform-aws-modules/vpc/aws",
+      "version": "3.14.0"
+    },
+    {
+      "name": "rds",
+      "source": "terraform-aws-modules/rds/aws",
+      "version": "3.5.0"
+    },
+    {
+      "name": "ecs-container-definition",
+      "source": "cloudposse/ecs-container-definition/aws",
+      "version": "0.58.1"
+    },
+    {
+      "name": "ecs",
+      "source": "terraform-aws-modules/ecs/aws",
+      "version": "3.5.0"
+    },
+    {
+      "name": "s3-log-storage",
+      "source": "cloudposse/s3-log-storage/aws",
+      "version": "0.28.0"
+    }
+  ],
+  "context": {
+    "excludeStackIdFromLogicalIds": "true",
+    "allowSepCharsInLogicalIds": "true"
+  }
+}

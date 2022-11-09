@@ -1,0 +1,14 @@
+{
+  "CustomizedMessagingS3Key": "",
+  "Stage": "dev",
+  "Region": "dev",
+  "AccessKey": "",
+  "SecretKey": "",
+  "CognitoAuthCallbackUrls": [
+    ""
+  ],
+  "CognitoAuthLogoutUrls": [
+    ""
+  ],
+  "LBHttpsListener": ""
+}
