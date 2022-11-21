@@ -1,25 +1,55 @@
 import { TerraformOutput, TerraformStack } from 'cdktf';
 import { Construct } from 'constructs';
 import { AwsProvider } from '../../.gen/providers/aws/provider';
-import { AwsRegion } from '../constants/aws';
-import {MonozipAwsStackID, MonozipStacks} from '../constants/stacks';
+import { MonozipAwsStackID, MonozipStacks } from '../constants/stacks';
 import { EcsContainer, EcsFargateService, EcsServiceCluster } from '../constructs/cluster';
-import { ContainerRegistry } from '../constructs/registry';
+import { ContainerRegistry, ContainerRepository } from '../constructs/registry';
 import { FargateCognitoRole } from '../constructs/roles';
 import { MonozipRemoteBackend, MonozipRemoteState } from '../constructs/state';
 import * as config from "../../config.json";
 
+export class MonozipImageRepoStack extends TerraformStack {
+  private readonly registry: ContainerRegistry;
+  private readonly monozipDemoRepo: ContainerRepository;
+  constructor(scope: Construct, id: string) {
+    super(scope, id);
+    new MonozipRemoteBackend(this, MonozipStacks.IMAGE, config.Stage);
+
+    new AwsProvider(this, MonozipAwsStackID.ID, {
+      region: config.Region,
+      accessKey: config.AccessKey,
+      secretKey: config.SecretKey,
+    });
+
+
+
+    this.registry = new ContainerRegistry(this, 'ContainerRegistry', {
+      namespace: 'monozip-demo',
+    });
+
+    this.monozipDemoRepo = this.registry.addRepository('monozip-demo-api');
+  }
+
+  public export() {
+    new TerraformOutput(this, 'MonzipDemoImageRepoUrl', {
+      value: this.monozipDemoRepo.getRepositoryUrl(),
+    });
+  }
+}
+
 export class MonozipComputeStack extends TerraformStack {
   private readonly registry: ContainerRegistry;
-  private readonly monozipDemoApiV2: EcsFargateService;
+  private readonly monozipDemoApi: EcsFargateService;
 
   constructor(scope: Construct, id: string) {
     super(scope, id);
 
     new MonozipRemoteBackend(this, MonozipStacks.COMPUTE, config.Stage);
 
-    new AwsProvider(this, 'AwsProvider', {
-      region: AwsRegion.TOKYO,
+    new AwsProvider(this, MonozipAwsStackID.ID, {
+      region: config.Region,
+      accessKey: config.AccessKey,
+      secretKey: config.SecretKey,
     });
 
     const networkState = new MonozipRemoteState(this, 'MonozipRemoteStateNetwork',
@@ -47,15 +77,16 @@ export class MonozipComputeStack extends TerraformStack {
       userPoolId: middlewareState.getString('CognitoUserPoolId'),
     });
 
-    const monozipDemoApiV2Container = new EcsContainer(this, 'MonozipDemoApiV2Container', {
+    // todo
+    const monozipDemoApiContainer = new EcsContainer(this, 'MonozipDemoApiContainer', {
       name: 'monozip-demo-api',
       imageUri: monozipDemoRepo.getImageUrl('latest'),
-      port: 8087,
+      port: config.ServicePort,
       taskRoleArn: taskRole.roleArn,
     });
 
-    this.monozipDemoApiV2 = cluster.addPublicService(
-        monozipDemoApiV2Container,
+    this.monozipDemoApi = cluster.addPublicService(
+        monozipDemoApiContainer,
       1,
       gatewayState.getString('MonozipDemoApiTargetGroupArn'),
       middlewareState.getString('MonozipDemoServiceDiscoveryServiceArn'),
@@ -67,8 +98,8 @@ export class MonozipComputeStack extends TerraformStack {
       value: this.registry.registryUrl,
     });
 
-    new TerraformOutput(this, 'MonzipDemoApiV2Port', {
-      value: this.monozipDemoApiV2.port,
+    new TerraformOutput(this, 'MonzipDemoApiPort', {
+      value: this.monozipDemoApi.port,
     });
   }
 }

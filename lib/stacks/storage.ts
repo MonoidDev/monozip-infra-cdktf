@@ -29,6 +29,7 @@ export class MonozipStorageStack extends TerraformStack {
       subnets: networkState.getList(MonozipAwsStackID.NETWORK_PRIVATE_SUBNETS),
       ingressCidrBlocks: networkState.getList(MonozipAwsStackID.NETWORK_PRIVATE_CIDRS),
       databaseName: 'monozip_demo',
+      deletionProtection: config.RDSDeletionProtection,
     });
 
     this.es = new ElasticSearchDatabase(this, 'ElasticSearchDatabase', {
@@ -41,31 +42,31 @@ export class MonozipStorageStack extends TerraformStack {
   }
 
   public export() {
-    new TerraformOutput(this, 'PostgresDatabaseEndpoint', {
+    new TerraformOutput(this, MonozipAwsStackID.POSTGRES_DATABASE_ENDPOINT, {
       value: this.monozipDemoPg.endpoint,
     });
-    new TerraformOutput(this, 'PostgresDatabaseUsername', {
+    new TerraformOutput(this, MonozipAwsStackID.POSTGRES_DATABASE_USERNAME, {
       value: this.monozipDemoPg.username,
       sensitive: true,
     });
-    new TerraformOutput(this, 'PostgresDatabasePassword', {
+    new TerraformOutput(this, MonozipAwsStackID.POSTGRES_DATABASE_PASSWORD, {
       value: this.monozipDemoPg.password,
       sensitive: true,
     });
-    new TerraformOutput(this, 'PostgresDatabasePort', {
+    new TerraformOutput(this, MonozipAwsStackID.POSTGRES_DATABASE_PORT, {
       value: this.monozipDemoPg.port,
     });
-    new TerraformOutput(this, 'PostgresDatabaseDbName', {
+    new TerraformOutput(this, MonozipAwsStackID.POSTGRES_DATABASE_DBNAME, {
       value: this.monozipDemoPg.dbName,
     });
-    new TerraformOutput(this, 'ElasticSearchDatabaseEndpoint', {
+    new TerraformOutput(this, MonozipAwsStackID.ELASTICSEARCH_DATABASE_ENDPOINT, {
       value: this.es.domainEndpoint,
     });
-    new TerraformOutput(this, 'ElasticSearchDatabaseUsername', {
+    new TerraformOutput(this, MonozipAwsStackID.ELASTICSEARCH_DATABASE_USERNAME, {
       value: this.es.domainMasterUsername,
       sensitive: true,
     });
-    new TerraformOutput(this, 'ElasticSearchDatabasePassword', {
+    new TerraformOutput(this, MonozipAwsStackID.ELASTICSEARCH_DATABASE_PASSWORD, {
       value: this.es.domainMasterPassword,
       sensitive: true,
     });

@@ -4,7 +4,7 @@ import { DataAwsElbServiceAccount } from '../../.gen/providers/aws/data-aws-elb-
 import { Lb } from '../../.gen/providers/aws/lb';
 import { LbListener } from '../../.gen/providers/aws/lb-listener';
 import { LbListenerRule } from '../../.gen/providers/aws/lb-listener-rule';
-import {  LbTargetGroup } from '../../.gen/providers/aws/lb-target-group';
+import { LbTargetGroup } from '../../.gen/providers/aws/lb-target-group';
 import { DataAwsIamPolicyDocument } from '../../.gen/providers/aws/data-aws-iam-policy-document';
 import { S3Bucket } from '../../.gen/providers/aws/s3-bucket';
 import { S3BucketPolicy } from '../../.gen/providers/aws/s3-bucket-policy';
@@ -64,7 +64,7 @@ export class Alb extends Construct {
       policy: logPolicy.json,
     });
 
-    new SecurityGroup(this, 'SecurityGroup', {
+    const sg = new SecurityGroup(this, 'SecurityGroup', {
       name: `${props.name}-sg`,
       vpcId: props.vpcId,
       ingress: props.ports.map(value => {
@@ -90,6 +90,7 @@ export class Alb extends Construct {
       subnets: props.subnets,
       loadBalancerType: 'application',
       enableDeletionProtection: false,
+      securityGroups:[sg.id],
       accessLogs: {
         bucket: logBucket.bucket,
         prefix: 'access-logs',
@@ -110,6 +111,12 @@ export class Alb extends Construct {
     return new HttpsListener(this, 'HttpsListener', {
       lbArn: this.lb.arn,
       domain: domain,
+      vpcId: this.vpcId,
+    });
+  }
+  public addHttpListener(): HttpListener {
+    return new HttpListener(this, 'HttpListener', {
+      lbArn: this.lb.arn,
       vpcId: this.vpcId,
     });
   }
@@ -142,6 +149,68 @@ export class HttpsListener extends Construct {
       port: 443,
       protocol: 'HTTPS',
       certificateArn: cert.arn,
+      lifecycle: {
+        ignoreChanges: ['default_action'],
+      },
+      defaultAction: [{
+        fixedResponse: {
+          statusCode: '503',
+          contentType: 'text/plain',
+        },
+        type: 'fixed-response',
+      }],
+    });
+  }
+
+  public addForwardRule(name: string, paths: string[], forwardToPort: number, protocol?: string, healthCheckPath?: string): string {
+    const tg = new LbTargetGroup(this, `LoadBalancerTargetGroup-${name}`, {
+      name: name,
+      vpcId: this.vpcId,
+      port: forwardToPort,
+      targetType: 'ip',
+      protocol: protocol ?? 'HTTP',
+      healthCheck: {
+        port: forwardToPort.toString(),
+        protocol: protocol ?? 'HTTP',
+        path: healthCheckPath ?? '/health',
+        healthyThreshold: 2,
+        unhealthyThreshold: 2,
+        interval: 10,
+      },
+    });
+
+    new LbListenerRule(this, `LbListenerRule-${name}`, {
+      listenerArn: this.listener.arn,
+      action: [{
+        type: 'forward',
+        targetGroupArn: tg.arn,
+      }],
+      condition: [{
+        pathPattern: { values: paths },
+      }],
+    });
+
+    return tg.arn;
+  }
+}
+
+interface HttpListenerProps {
+  readonly lbArn: string;
+  readonly vpcId: string;
+}
+
+export class HttpListener extends Construct {
+  private readonly listener: LbListener;
+  private readonly vpcId: string;
+
+  constructor(scope: Construct, id: string, props: HttpListenerProps) {
+    super(scope, id);
+    this.vpcId = props.vpcId;
+
+    this.listener = new LbListener(this, 'LbListener', {
+      loadBalancerArn: props.lbArn,
+      port: 80,
+      protocol: 'HTTP',
       lifecycle: {
         ignoreChanges: ['default_action'],
       },

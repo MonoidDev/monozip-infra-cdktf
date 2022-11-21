@@ -1,0 +1,18 @@
+{
+  "Stage": "test",
+  "Region": "ap-northeast-1",
+  "AccessKey": "",
+  "SecretKey": "",
+  "CognitoAuthCallbackUrls": [
+    "https://www.xxxxx.com/authExample"
+  ],
+  "CognitoAuthLogoutUrls": [
+    "https://www.xxxxx.com/authLoginExample"
+  ],
+  "CognitoAuthS3BucketName": "monozip-demo-s3-bucket-example",
+  "GithubClientID" : "",
+  "GithubClientSecret" : "",
+  "OIDCIssuerURL" : "https://xxxxxxxx.execute-api.ap-northeast-1.amazonaws.com",
+  "ServicePort": 8080,
+  "RDSDeletionProtection": false
+}

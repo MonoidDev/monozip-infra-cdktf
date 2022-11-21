@@ -44,7 +44,7 @@ export class EcsServiceCluster extends Construct {
     });
 
     this.role = new IamRole(this, 'ECSRole', {
-      name: 'ecsTaskExecutionRole',
+      name: 'monozipDemoecsTaskExecutionRole',
       assumeRolePolicy: new DataAwsIamPolicyDocument(this, 'ECSRolePolicy', {
         version: '2012-10-17',
         statement: [{
@@ -158,7 +158,7 @@ export class EcsContainer extends Construct {
       requiresCompatibilities: ['FARGATE'],
       cpu: props.cpu ? props.cpu.toString() : '256',
       memory: props.memory ? props.memory.toString() : '512',
-      executionRoleArn: `arn:aws:iam::${callerIdentity.accountId}:role/ecsTaskExecutionRole`,
+      executionRoleArn: `arn:aws:iam::${callerIdentity.accountId}:role/monozipDemoecsTaskExecutionRole`,
       containerDefinitions: container.jsonMapEncodedListOutput,
       taskRoleArn: props.taskRoleArn,
     });

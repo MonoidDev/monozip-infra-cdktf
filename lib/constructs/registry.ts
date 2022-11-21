@@ -50,6 +50,9 @@ export class ContainerRepository extends Construct {
     });
   }
 
+  public getRepositoryUrl(): string {
+    return `${this.repository.repositoryUrl}`;
+  }
   public getImageUrl(tag: string): string {
     const image = new DataAwsEcrImage(this, `Image-${tag}`, {
       repositoryName: this.repository.name,

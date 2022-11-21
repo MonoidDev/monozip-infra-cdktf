@@ -19,6 +19,7 @@ export interface RelationalDatabaseProps {
   readonly subnets: string[];
   readonly ingressCidrBlocks: string[];
   readonly databaseName: string;
+  readonly deletionProtection: boolean;
 }
 
 export class PostgresDatabase extends Construct {
@@ -63,7 +64,8 @@ export class PostgresDatabase extends Construct {
       maxAllocatedStorage: 100,
       multiAz: true,
       iamDatabaseAuthenticationEnabled: true,
-      deletionProtection: true,
+      deletionProtection: false, // todo
+      // deletionProtection: props.deletionProtection, // todo
       subnetIds: props.subnets,
       maintenanceWindow: 'Sat:13:15-Sat:13:45',
       backupWindow: '14:00-14:30',

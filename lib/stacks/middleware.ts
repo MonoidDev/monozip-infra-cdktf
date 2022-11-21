@@ -1,7 +1,7 @@
 import { TerraformOutput, TerraformStack } from 'cdktf';
 import { Construct } from 'constructs';
-import {MonozipAwsStackID, MonozipStacks} from '../constants/stacks';
-import {AwsProvider} from '../../.gen/providers/aws/provider';
+import { MonozipAwsStackID, MonozipStacks } from '../constants/stacks';
+import { AwsProvider } from '../../.gen/providers/aws/provider';
 import { MonozipRemoteBackend, MonozipRemoteState } from '../constructs/state';
 import { ServiceDiscoveryService } from '../../.gen/providers/aws/service-discovery-service';
 import { ServiceDiscovery } from '../constructs/service-discovery';
@@ -50,26 +50,29 @@ export class MonozipMiddlewareStack extends TerraformStack {
       name: 'monozip-demo-user-pool',
       callbackUrls: config.CognitoAuthCallbackUrls,
       logoutUrls: config.CognitoAuthLogoutUrls,
-      s3Key: config.CustomizedMessagingS3Key,
+      bucketName: config.CognitoAuthS3BucketName,
     });
   }
 
   public export() {
-    new TerraformOutput(this, 'RabbitMqDemoEndpoint', {
+    new TerraformOutput(this, MonozipAwsStackID.RABBITMQ_ENDPOINT, {
       value: this.mq.endpoint,
     });
-    new TerraformOutput(this, 'RabbitMqDemoUsername', {
+    new TerraformOutput(this, MonozipAwsStackID.RABBITMQ_USERNAME, {
       value: this.mq.username,
       sensitive: true,
     });
-    new TerraformOutput(this, 'RabbitMqDemoPassword', {
+    new TerraformOutput(this, MonozipAwsStackID.RABBITMQ_PORT, {
+      value: this.mq.port,
+    });
+    new TerraformOutput(this, MonozipAwsStackID.RABBITMQ_PASSWORD, {
       value: this.mq.password,
       sensitive: true,
     });
     new TerraformOutput(this, 'MonozipDemoServiceDiscoveryServiceArn', {
       value: this.discoverService.arn,
     });
-    new TerraformOutput(this, 'CognitoUserPoolId', {
+    new TerraformOutput(this, MonozipAwsStackID.COGNITO_USER_POOL_ID, {
       value: this.auth.userPoolId,
     });
     new TerraformOutput(this, 'CognitoLambdaTriggerRoleId', {
@@ -78,8 +81,8 @@ export class MonozipMiddlewareStack extends TerraformStack {
     new TerraformOutput(this, 'CognitoLambdaTriggerBucket', {
       value: this.auth.bucketArn,
     });
-    new TerraformOutput(this, 'CognitoLambdaTriggerArn', {
-      value: this.auth.fnArn,
-    });
+    // new TerraformOutput(this, 'CognitoLambdaTriggerArn', {
+    //   value: this.auth.fnArn,
+    // });
   }
 }

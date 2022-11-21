@@ -79,6 +79,10 @@ export class RabbitMq extends Construct {
     return 'admin';
   }
 
+  public get port(): string {
+    return '5671';
+  }
+
   public get password(): string {
     return this.mqPassword.result;
   }
