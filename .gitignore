@@ -11,3 +11,4 @@ tsconfig.tsbuildinfo
 !setup.js
 .idea
 .config.json
+*.js.map
