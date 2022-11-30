@@ -10,5 +10,5 @@ tsconfig.tsbuildinfo
 !jest.config.js
 !setup.js
 .idea
-.config.json
+config.json
 *.js.map

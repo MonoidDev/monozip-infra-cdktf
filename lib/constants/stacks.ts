@@ -30,6 +30,7 @@ export enum MonozipAwsStackID {
     POSTGRES_DATABASE_DBNAME = "PostgresDatabaseDbName",
 
     ELASTICSEARCH_DATABASE_ENDPOINT = "ElasticSearchDatabaseEndpoint",
+    ELASTICSEARCH_DATABASE_PORT = "ElasticSearchDatabasePort",
     ELASTICSEARCH_DATABASE_USERNAME = "ElasticSearchDatabaseUsername",
     ELASTICSEARCH_DATABASE_PASSWORD = "ElasticSearchDatabasePassword",
 

@@ -1,7 +1,6 @@
 import { Construct } from 'constructs';
 import { DataAwsCallerIdentity } from '../../.gen/providers/aws/data-aws-caller-identity';
 import { DataAwsRegion } from '../../.gen/providers/aws/data-aws-region';
-import { DataAwsEcrImage } from '../../.gen/providers/aws/data-aws-ecr-image';
 import { EcrRepository } from '../../.gen/providers/aws/ecr-repository';
 
 interface AwsRegistryProps {
@@ -51,13 +50,6 @@ export class ContainerRepository extends Construct {
   }
 
   public getRepositoryUrl(): string {
-    return `${this.repository.repositoryUrl}`;
-  }
-  public getImageUrl(tag: string): string {
-    const image = new DataAwsEcrImage(this, `Image-${tag}`, {
-      repositoryName: this.repository.name,
-      imageTag: tag,
-    });
-    return `${this.repository.repositoryUrl}:${image.imageTag}`;
+    return `${this.repository.repositoryUrl}:latest`;
   }
 }

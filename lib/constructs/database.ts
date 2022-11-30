@@ -253,6 +253,10 @@ export class ElasticSearchDatabase extends Construct {
     return Token.asString(this.domain.endpoint);
   }
 
+  public get domainPort(): number {
+    return 443;
+  }
+
   public get domainMasterUsername(): string {
     return Token.asString(this.domain.advancedSecurityOptions.masterUserOptions.masterUserName);
   }

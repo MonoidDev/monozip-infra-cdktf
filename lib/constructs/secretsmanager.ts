@@ -1,13 +1,13 @@
-import {Construct} from 'constructs';
-import {SecretsmanagerSecret} from '../../.gen/providers/aws/secretsmanager-secret';
-import {SecretsmanagerSecretVersion} from '../../.gen/providers/aws/secretsmanager-secret-version';
+import { Construct } from 'constructs';
+import { SecretsmanagerSecret } from '../../.gen/providers/aws/secretsmanager-secret';
+import { SecretsmanagerSecretVersion } from '../../.gen/providers/aws/secretsmanager-secret-version';
 
 export class SecretsManager extends Construct {
-    constructor(scope: Construct, id: string, secrets:Secrets) {
+    constructor(scope: Construct, id: string, name:string, secrets:Secrets) {
         super(scope, id);
 
        const manager =  new SecretsmanagerSecret(this, id, {
-            name: "monozip-demo",
+            name: name,
         })
         new SecretsmanagerSecretVersion(this, "SecretsmanagerSecretVersion", {
             secretId: manager.id,

@@ -135,12 +135,7 @@ export class EcsContainer extends Construct {
         containerPort: props.port,
         hostPort: props.port,
       }],
-      environment: [
-        {
-          name: 'RUN_MODE',
-          value: 'pro',
-        },
-      ],
+
       logConfiguration: {
         logDriver: 'awslogs',
         options: {

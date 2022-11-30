@@ -73,10 +73,20 @@ PostgresDatabase
 ```bash
 cdktf deploy MonozipDemoMiddlewareStack
 ```
+RabbitMQ
+
+<img src="./img/RabbitMQ.png" />
+
+
 ### MonozipDemoGatewayStack
 ```bash
 cdktf deploy MonozipDemoGatewayStack
 ```
+ALB
+
+<img src="./img/ALB.png" />
+
+
 ### MonozipDemoImageRepoStack
 ```bash
 cdktf deploy MonozipDemoImageRepoStack
@@ -87,6 +97,9 @@ cdktf deploy MonozipDemoImageRepoStack
 cdktf deploy MonozipDemoSecretsManagerStack
 ```
 
+<img src="./img/SSM.png" />
+
+
 ### Push image to ECR
 ```bash
 aws ecr get-login-password --region ap-northeast-1 | docker login --username AWS --password-stdin xxxxxxxxxxxx.dkr.ecr.ap-northeast-1.amazonaws.com
@@ -96,6 +109,8 @@ or
 ```bash
 todo github action 
 ```
+<img src="./img/ECR-image.png" />
+
 
 ### MonozipDemoComputeStack
 ```bash

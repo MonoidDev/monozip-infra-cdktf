@@ -4,7 +4,7 @@ import { MonozipStorageStack } from '../lib/stacks/storage';
 import { MonozipMiddlewareStack } from '../lib/stacks/middleware';
 import { MonozipComputeStack, MonozipImageRepoStack } from '../lib/stacks/compute';
 import { MonozipGatewayStack } from '../lib/stacks/gateway';
-import {MonozipSecretsManagerStack} from "../lib/stacks/secretsmanager";
+import { MonozipSecretsManagerStack } from "../lib/stacks/secretsmanager";
 
 export class Monozip extends App {
   constructor() {
@@ -14,7 +14,7 @@ export class Monozip extends App {
     new MonozipStorageStack(this, 'MonozipDemoStorageStack').export();
     new MonozipMiddlewareStack(this, 'MonozipDemoMiddlewareStack').export();
     new MonozipGatewayStack(this, 'MonozipDemoGatewayStack').export();
-    new MonozipImageRepoStack(this, 'MonozipDemoImageRepoStack');
+    new MonozipImageRepoStack(this, 'MonozipDemoImageRepoStack').export();
     new MonozipSecretsManagerStack(this, 'MonozipDemoSecretsManagerStack');
     // todo upload a image
     new MonozipComputeStack(this, 'MonozipDemoComputeStack').export();

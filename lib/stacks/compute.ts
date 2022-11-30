@@ -21,8 +21,6 @@ export class MonozipImageRepoStack extends TerraformStack {
       secretKey: config.SecretKey,
     });
 
-
-
     this.registry = new ContainerRegistry(this, 'ContainerRegistry', {
       namespace: 'monozip-demo',
     });
@@ -38,7 +36,6 @@ export class MonozipImageRepoStack extends TerraformStack {
 }
 
 export class MonozipComputeStack extends TerraformStack {
-  private readonly registry: ContainerRegistry;
   private readonly monozipDemoApi: EcsFargateService;
 
   constructor(scope: Construct, id: string) {
@@ -58,12 +55,8 @@ export class MonozipComputeStack extends TerraformStack {
         MonozipStacks.GATEWAY, config.Stage);
     const middlewareState = new MonozipRemoteState(this, 'MonozipRemoteStateMiddleware',
         MonozipStacks.MIDDLEWARE, config.Stage);
-
-    this.registry = new ContainerRegistry(this, 'ContainerRegistry', {
-      namespace: 'monozip-demo',
-    });
-
-    const monozipDemoRepo = this.registry.addRepository('monozip-demo-api');
+   const containerState = new MonozipRemoteState(this, 'MonozipRemoteStateImageRepo',
+        MonozipStacks.IMAGE, config.Stage);
 
     const cluster = new EcsServiceCluster(this, 'EcsCluster', {
       name: 'monozip-demo-cluster',
@@ -80,9 +73,15 @@ export class MonozipComputeStack extends TerraformStack {
     // todo
     const monozipDemoApiContainer = new EcsContainer(this, 'MonozipDemoApiContainer', {
       name: 'monozip-demo-api',
-      imageUri: monozipDemoRepo.getImageUrl('latest'),
+      imageUri: containerState.getString('MonzipDemoImageRepoUrl'),
       port: config.ServicePort,
       taskRoleArn: taskRole.roleArn,
+      environment:        {
+          'AWS_REGION_NAME': config.Region,
+          'AWS_ACCESS_KEY_ID': config.AccessKey,
+          'AWS_SECRET_ACCESS_KEY': config.SecretKey,
+          'AWS_SSM_SECRET_NAME': config.SecretName,
+        },
     });
 
     this.monozipDemoApi = cluster.addPublicService(
@@ -94,10 +93,6 @@ export class MonozipComputeStack extends TerraformStack {
   }
 
   public export() {
-    new TerraformOutput(this, 'EcrRegistryUrl', {
-      value: this.registry.registryUrl,
-    });
-
     new TerraformOutput(this, 'MonzipDemoApiPort', {
       value: this.monozipDemoApi.port,
     });

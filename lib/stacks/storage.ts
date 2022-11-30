@@ -1,4 +1,4 @@
-import { TerraformOutput, TerraformStack } from 'cdktf';
+import { TerraformOutput, TerraformStack, Fn } from 'cdktf';
 import { Construct } from 'constructs';
 import { AwsProvider } from '../../.gen/providers/aws/provider';
 import { MonozipAwsStackID, MonozipStacks } from '../constants/stacks';
@@ -43,7 +43,7 @@ export class MonozipStorageStack extends TerraformStack {
 
   public export() {
     new TerraformOutput(this, MonozipAwsStackID.POSTGRES_DATABASE_ENDPOINT, {
-      value: this.monozipDemoPg.endpoint,
+      value: Fn.element(Fn.split( ":", this.monozipDemoPg.endpoint), 0),
     });
     new TerraformOutput(this, MonozipAwsStackID.POSTGRES_DATABASE_USERNAME, {
       value: this.monozipDemoPg.username,
@@ -61,6 +61,9 @@ export class MonozipStorageStack extends TerraformStack {
     });
     new TerraformOutput(this, MonozipAwsStackID.ELASTICSEARCH_DATABASE_ENDPOINT, {
       value: this.es.domainEndpoint,
+    });
+    new TerraformOutput(this, MonozipAwsStackID.ELASTICSEARCH_DATABASE_PORT, {
+      value: this.es.domainPort,
     });
     new TerraformOutput(this, MonozipAwsStackID.ELASTICSEARCH_DATABASE_USERNAME, {
       value: this.es.domainMasterUsername,

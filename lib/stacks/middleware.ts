@@ -1,4 +1,4 @@
-import { TerraformOutput, TerraformStack } from 'cdktf';
+import {Fn, TerraformOutput, TerraformStack} from 'cdktf';
 import { Construct } from 'constructs';
 import { MonozipAwsStackID, MonozipStacks } from '../constants/stacks';
 import { AwsProvider } from '../../.gen/providers/aws/provider';
@@ -55,8 +55,9 @@ export class MonozipMiddlewareStack extends TerraformStack {
   }
 
   public export() {
+    const host = Fn.element(Fn.split( ":", this.mq.endpoint), 1)
     new TerraformOutput(this, MonozipAwsStackID.RABBITMQ_ENDPOINT, {
-      value: this.mq.endpoint,
+      value: Fn.substr(host, 2,  Fn.lengthOf(host)),
     });
     new TerraformOutput(this, MonozipAwsStackID.RABBITMQ_USERNAME, {
       value: this.mq.username,
